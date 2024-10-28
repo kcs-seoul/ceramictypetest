@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도자기 유형검사</title>
+    <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 700px; /* Increase the max-width to allow more content */
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1, h2 {
+            text-align: center;
+            margin: 20px;
+            font-weight: 900; /* Maximum boldness */
+        }
+        .section .question h2,
+        #resultHeader {
+            font-weight: 900; /* Maximum boldness for questions and result header */
+        }
+        .section {
+            display: none; /* Initially hide all sections */
+        }
+        .section.active {
+            display: block; /* Show only the active section */
+        }
+        .question {
+            margin: 0 auto 20px; /* Center the question and add bottom margin */
+            padding: 0; /* Remove padding for question text */
+            width: 100%; /* Increase the width of the question section */
+            box-sizing: border-box;
+        }
+        .option {
+            border: 2px solid black;
+            padding: 15px; /* Adjust padding */
+            margin: 10px auto; /* Add space between options and center */
+            cursor: pointer;
+            width: 100%; /* Use full width for options */
+            max-width: 650px; /* Set a max-width slightly lesser than container */
+            display: flex; 
+            align-items: center;
+            justify-content: center; /* Center the text within the options */
+            box-sizing: border-box;
+            font-size: 1em; /* Make font size consistent */
+            font-weight: 900;
+        }
+        .option:hover {
+            background-color: #f0f0f0;
+        }
+        .option.selected {
+            background-color: #625a7b;
+            color: white;
+            border-color: #625a7b;
+            font-weight: 900;
+        }
+        .option input[type="radio"] {
+            display: none; /* Hide radio buttons */
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px; /* Increase button padding */
+            background: #000000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 80%; /* Match the width to the input field */
+            margin: 10px auto;
+            box-sizing: border-box;
+            font-size: 1.2em; /* Increase button font size */
+            font-family: Georgia, 'Times New Roman', Times, serif; /* Change button font to Georgia */
+        }
+        .next-button-container button {
+            width: auto; /* Make next buttons width auto */
+            padding: 10px 20px; /* Revert padding for next buttons */
+            font-size: 16px; /* Revert font size for next buttons */
+            font-family: Georgia, 'Times New Roman', Times, serif; /* Change next button font to Georgia */
+        }
+        .next-button-container {
+            text-align: right; /* Align button container to the right */
+        }
+        #result {
+            text-align: center;
+            padding: 20px;
+        }
+        #result img {
+            display: block;
+            width: 100%;
+            height: auto; /* Maintain aspect ratio */
+            margin-top: 20px;
+        }
+        #result button.button {
+            width: 100%; /* Match the button width to the image width */
+        }
+        .start-section img {
+            width: 100%; /* Ensure the image fits within the container */
+            max-width: 100%;
+            height: auto; /* Maintain aspect ratio */
+            margin: 20px 0;
+        }
+        .input-field {
+            padding: 15px;
+            font-size: 1.2em;
+            width: 80%;
+            margin: 20px auto;
+            display: block;
+            box-sizing: border-box;
+        }
+        .question img {
+            width: 100%;
+            max-width: 200px;
+            margin: 20px auto;
+        }
+        
+        /* CSS for small screens (mobiles) */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            h2 {
+                font-size: 1.2em;
+            }
+            .option {
+                padding: 10px;
+                width: 100%;
+                font-size: 0.9em;
+                font-weight: 900;
+            }
+            .option.selected {
+                font-size: 0.9em;
+                font-weight: 900;
+            }
+            .button {
+                padding: 10px 20px;
+                font-size: 1em;
+                width: 90%;
+            }
+            .input-field {
+                padding: 10px;
+                font-size: 1em;
+                width: 90%;
+            }
+            .question {
+                width: 90%; /* Adjust question width for small screens */
+            }
+            .question img {
+                width: 70%;
+            }
+            #result button.button {
+                width: 100%; /* Match the button width to the image width */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section active" id="startSection">
+            <h1>도자기 유형검사</h1>
+            <img src="doh_image.png" alt="도자기 이미지" class="start-section" style="height: 270px; width: 270px;">
+            <div>
+                <input type="text" id="nameInput" class="input-field" placeholder="이름을 입력하세요">
+            </div>
+            <button type="button" class="button" onclick="startQuiz()">시작하기</button>
+        </div>
+
+        <form id="quizForm">
+            <div class="section">
+                <div class="question">
+                    <h2>당신이 선호하는 미술 스타일은 무엇인가요?</h2>
+                    <img src="color.png" alt="예술 스타일 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="color1" name="color" value="goryeo">
+                        <label for="color1">아름답고 정교한 설치작품</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="color2" name="color" value="buncheong">
+                        <label for="color2">자유롭고 독창적인 회화작품</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="color3" name="color" value="joseon">
+                        <label for="color3">절제되고 깔끔한 도자작품</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>당신이 가장 좋아하는 계절은?</h2>
+                    <img src="leaf.png" alt="계절 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="leaf1" name="leaf" value="goryeo">
+                        <label for="leaf1">봄, 가을</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="leaf2" name="leaf" value="buncheong">
+                        <label for="leaf2">여름</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="leaf3" name="leaf" value="joseon">
+                        <label for="leaf3">겨울</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>즐겨보는 유투브 컨텐츠는?</h2>
+                    <img src="phone.png" alt="계절 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="phone1" name="phone" value="buncheong">
+                        <label for="phone1">인급동 예능, 토크 컨텐츠</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="phone2" name="phone" value="goryeo">
+                        <label for="phone2">자기계발, 지식정보 컨텐츠</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="phone3" name="phone" value="joseon">
+                        <label for="phone3">브이로그, ASMR 컨텐츠</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>당신의 이상적인 집은 어떤 모습인가요?</h2>
+                    <img src="bed.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="bed1" name="bed" value="buncheong">
+                        <label for="bed1">트렌디한 가구로 꾸민 미드센추리 모던</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="bed2" name="bed" value="joseon">
+                        <label for="bed2">일본 온천에 온 듯 화이트, 우드톤의 미니멀한 스타일</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="bed3" name="bed" value="goryeo">
+                        <label for="bed3">빈티지 소품들이 돋보이는 이탈리안 스타일</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>다른 사람들이 당신을 어떻게 기억하기를 원하시나요?</h2>
+                    <img src="eye.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="eye1" name="eye" value="goryeo">
+                        <label for="eye1">감각적이고 친절한 사람</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="eye2" name="eye" value="joseon">
+                        <label for="eye2">담백하고 진솔한 사람</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="eye3" name="eye" value="buncheong">
+                        <label for="eye3">독창적이고 매력 넘치는 사람</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>당신이 선호하는 여행 스타일은?</h2>
+                    <img src="yacht.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="yacht1" name="yacht" value="goryeo">
+                        <label for="yacht1">볼거리 많은 낭만의 도시 여행</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="yacht2" name="yacht" value="buncheong">
+                        <label for="yacht2">새롭고 모험적인 여행</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="yacht3" name="yacht" value="joseon">
+                        <label for="yacht3">한적하고 여유로운 여행</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>당신이 중시하는 가치는 무엇인가요?</h2>
+                    <img src="kira.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="kira1" name="kira" value="joseon">
+                        <label for="kira1">전통과 순수함</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="kira2" name="kira" value="buncheong">
+                        <label for="kira2">혁신과 창의성</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="kira3" name="kira" value="goryeo">
+                        <label for="kira3">신중함과 완벽함</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <div class="question">
+                    <h2>당신은 다른 사람들과의 관계에서 어떻게 행동하나요?</h2>
+                    <img src="question.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="balloon1" name="balloon" value="goryeo">
+                        <label for="balloon1">친절하고 예의 바른 편입니다</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="balloon2" name="balloon" value="joseon">
+                        <label for="balloon2">진솔하게 신뢰를 쌓는 편입니다</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="balloon3" name="balloon" value="buncheong">
+                        <label for="balloon3">개방적이고 융통성있는 편입니다</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>나의 진지한 진심을 전할 때, 어떻게 표현하고 싶나요?</h2>
+                    <img src="heart.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="heart1" name="heart" value="joseon">
+                        <label for="heart1">장문으로 조목조목 설명하는 문자</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="heart2" name="heart" value="buncheong">
+                        <label for="heart2">편하게 대화할 수 있는 통화</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="heart3" name="heart" value="goryeo">
+                        <label for="heart3">정성스레 진심을 담은 편지</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+    
+            <div class="section">
+                <div class="question">
+                    <h2>당신의 일상에서의 모습은?</h2>
+                    <img src="camera.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="camera1" name="camera" value="buncheong">
+                        <label for="bubble1">변화에 적응을 잘합니다</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="camera2" name="camera" value="joseon">
+                        <label for="camera2">소박하고 꾸밈이 없습니다</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="camera3" name="camera" value="goryeo">
+                        <label for="camera3">완벽주의자이며 세심합니다</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>당신이 선호하는 음악 장르는?</h2>
+                    <img src="ear.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="ear1" name="ear" value="goryeo">
+                        <label for="ear1">클래식</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="ear2" name="ear" value="buncheong">
+                        <label for="ear2">인디</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="ear3" name="ear" value="joseon">
+                        <label for="ear3">발라드</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="question">
+                    <h2>당신은 스트레스를 받을 때 주로 어떤 방법으로 해소하나요?</h2>
+                    <img src="question.png" alt="가치 이미지">
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="question1" name="question" value="goryeo">
+                        <label for="question1">예술 감상 및 활동으로 해소</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="question2" name="question" value="buncheong">
+                        <label for="question2">새로운 취미 및 활동 시도</label>
+                    </div>
+                    <div class="option" onclick="selectOption(this)">
+                        <input type="radio" id="question3" name="question" value="joseon">
+                        <label for="question">일상 또는 자연 속에서 평화롭게 휴식</label>
+                    </div>
+                </div>
+                <div class="next-button-container">
+                    <button type="button" class="button" onclick="showNext()">다음</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="result" class="section">
+            <h2 id="resultHeader"></h2>
+            <img id="resultImage" src="" alt="도자기 캐릭터">
+            <button type="button" class="button" onclick="restartQuiz()">처음으로 돌아가기</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSectionIndex = 0;
+        const sections = document.querySelectorAll('.section');
+        let userName = '';
+
+        function startQuiz() {
+            userName = document.getElementById('nameInput').value.trim();
+            if (!userName) {
+                alert("이름을 입력해주세요.");
+                return;
+            }
+
+            sections[currentSectionIndex].classList.remove('active');
+            currentSectionIndex++;
+            sections[currentSectionIndex].classList.add('active');
+        }
+
+        function showNext() {
+            const currentSection = sections[currentSectionIndex];
+            const selectedOption = currentSection.querySelector('input[type="radio"]:checked');
+            
+            if (!selectedOption) {
+                alert("답변을 선택해주세요.");
+                return;
+            }
+
+            sections[currentSectionIndex].classList.remove('active');
+            currentSectionIndex++;
+
+            if (currentSectionIndex < sections.length - 1) {
+                sections[currentSectionIndex].classList.add('active');
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const form = document.getElementById('quizForm');
+            const quizAnswers = new FormData(form);
+
+            let scores = {
+                goryeo: 0,
+                buncheong: 0,
+                joseon: 0
+            };
+
+            for (const [key, value] of quizAnswers.entries()) {
+                scores[value]++;
+            }
+
+            const highestScoreType = Object.keys(scores).reduce(
+                (a, b) => scores[a] > scores[b] ? a : b
+            );
+
+            let result;
+            if (highestScoreType === 'goryeo') {
+                result = {
+                    image: 'goryeo.png'
+                };
+            } else if (highestScoreType === 'buncheong') {
+                result = {
+                    image: 'buncheong.png'
+                };
+            } else {
+                result = {
+                    image: 'joseon.png'
+                };
+            }
+
+            document.getElementById('resultHeader').textContent = `${userName}님의 검사 결과`;
+            document.getElementById('resultImage').src = result.image;
+
+            sections[currentSectionIndex].classList.add('active');
+        }
+
+        function restartQuiz() {
+            sections[currentSectionIndex].classList.remove('active');
+            currentSectionIndex = 0;
+            sections[currentSectionIndex].classList.add('active');
+            document.getElementById('quizForm').reset();
+
+            // Reset selected options
+            const selectedOptions = document.querySelectorAll('.option.selected');
+            selectedOptions.forEach(option => option.classList.remove('selected'));
+        }
+
+        function selectOption(optionDiv) {
+            const parent = optionDiv.parentElement;
+            const options = parent.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+
+            optionDiv.querySelector('input[type="radio"]').checked = true;
+            optionDiv.classList.add('selected');
+        }
+        
+    </script>
+</body>
+</html>
